@@ -60,3 +60,21 @@ export const updateTask = (
     })
     .catch((e) => console.log("e: ", e));
 };
+
+export const replaceTask = (
+  homeColumnId: string,
+  targetColumnId: string,
+  taskId: string
+) => {
+  axios
+    .post(
+      `${API_URL}/kanbanBoard/from/${homeColumnId}/to/${targetColumnId}/replace/${taskId}`
+    )
+    .then((res) => {
+      const { data } = res;
+      console.log("data: ", data);
+    })
+    .catch((e) => {
+      console.log("e: ", e);
+    });
+};
