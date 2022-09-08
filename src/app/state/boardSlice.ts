@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { NEW_ID } from "../../consts";
 import { RootState } from "../store";
 import { BoardItemState, BoardState, TaskState } from "./boardInterfaces";
 
@@ -59,6 +60,9 @@ export const boardrSlice = createSlice({
   name: "board",
   initialState,
   reducers: {
+    setBoard: (state, action: PayloadAction<any>) => {
+      state.data = action.payload.data;
+    },
     replaceItemInBoard: (state, action: PayloadAction<any>) => {
       const indexOfHomeItem = state.data.findIndex(
         (item: BoardItemState) => item.id === action.payload.idOfHomeItem
@@ -76,16 +80,45 @@ export const boardrSlice = createSlice({
         action.payload.task,
       ];
     },
-    createNewTask: (state, action: PayloadAction<any>) => {
+    startCreatingProcess: (state, action: PayloadAction<any>) => {
       const indexOfBoardItem = state.data.findIndex(
         (item: BoardItemState) => item.id === action.payload.idOfBoardItem
       );
       state.data[indexOfBoardItem].tasksList.push({
-        id: `${+new Date()}`.substring(10),
+        id: NEW_ID,
         description: "",
         author: "",
         isEditingInProcess: true,
       });
+    },
+    handleCreateTask: (state, action: PayloadAction<any>) => {
+      const indexOfBoardItem = state.data.findIndex(
+        (item: BoardItemState) => item.id === action.payload.boardItemId
+      );
+      const indexOfTask = state.data[indexOfBoardItem].tasksList.findIndex(
+        (task: TaskState) => task.id === NEW_ID
+      );
+      const { id, author, description } = action.payload.data;
+      state.data[indexOfBoardItem].tasksList[indexOfTask] = {
+        ...state.data[indexOfBoardItem].tasksList[indexOfTask],
+        id,
+        author,
+        description,
+      };
+    },
+    setTask: (state, action: PayloadAction<any>) => {
+      const indexOfBoardItem = state.data.findIndex(
+        (item: BoardItemState) => item.id === action.payload.idOfBoardItem
+      );
+      const indexOfTask = state.data[indexOfBoardItem].tasksList.findIndex(
+        (task: TaskState) => task.id === action.payload.taskId
+      );
+
+      state.data[indexOfBoardItem].tasksList[indexOfTask] = {
+        ...state.data[indexOfBoardItem].tasksList[indexOfTask],
+        author: action.payload.author,
+        description: action.payload.description,
+      };
     },
     setIsEditInProcessTask: (state, action: PayloadAction<any>) => {
       const indexOfBoardItem = state.data.findIndex(
@@ -95,28 +128,6 @@ export const boardrSlice = createSlice({
         (task: TaskState) => task.id === action.payload.taskId
       );
       state.data[indexOfBoardItem].tasksList[indexOfTask].isEditingInProcess =
-        action.payload.value;
-    },
-    setTaskAuthorValue: (state, action: PayloadAction<any>) => {
-      const indexOfBoardItem = state.data.findIndex(
-        (item: BoardItemState) => item.id === action.payload.idOfBoardItem
-      );
-      const indexOfTask = state.data[indexOfBoardItem].tasksList.findIndex(
-        (task: TaskState) => task.id === action.payload.taskId
-      );
-
-      state.data[indexOfBoardItem].tasksList[indexOfTask].author =
-        action.payload.value;
-    },
-    setTaskDescriptionValue: (state, action: PayloadAction<any>) => {
-      const indexOfBoardItem = state.data.findIndex(
-        (item: BoardItemState) => item.id === action.payload.idOfBoardItem
-      );
-      const indexOfTask = state.data[indexOfBoardItem].tasksList.findIndex(
-        (task: TaskState) => task.id === action.payload.taskId
-      );
-
-      state.data[indexOfBoardItem].tasksList[indexOfTask].description =
         action.payload.value;
     },
     deleteTask: (state, action: PayloadAction<any>) => {
@@ -131,12 +142,13 @@ export const boardrSlice = createSlice({
 });
 
 export const {
+  setBoard,
   replaceItemInBoard,
-  createNewTask,
+  startCreatingProcess,
   setIsEditInProcessTask,
-  setTaskAuthorValue,
-  setTaskDescriptionValue,
   deleteTask,
+  setTask,
+  handleCreateTask,
 } = boardrSlice.actions;
 
 export const selectBoardData = (state: RootState) => {

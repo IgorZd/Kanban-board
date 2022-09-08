@@ -19,6 +19,7 @@
     "@types/xstyled__system": "^1.17.1",
     "@xstyled/styled-components": "^1.18.1",
     "@xstyled/system": "^1.17.2",
+    "axios": "^0.27.2",
     "moment": "^2.29.1",
     "react": "^16.13.1",
     "react-addons-css-transition-group": "^15.6.2",

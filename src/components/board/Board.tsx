@@ -4,13 +4,14 @@ import styled from "@xstyled/styled-components";
 import { BoardItem } from "../boardItem/BoardItem";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  createNewTask,
+  startCreatingProcess,
   replaceItemInBoard,
   selectBoardData,
   setIsEditInProcessTask,
 } from "../../app/state/boardSlice";
 import { BoardItemState, TaskState } from "../../app/state/boardInterfaces";
 import { DropTarget } from "../../features/dragAndDrop/DropTarget";
+import { useGetKanbanBoard } from "../../api/kanbanBoard";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -36,6 +37,7 @@ const StyledDropTarget = styled(DropTarget)`
 
 export const Board = () => {
   const dispatch = useDispatch();
+  useGetKanbanBoard();
   const data = useSelector(selectBoardData);
   const [idOfHomeItem, setIdOfHomeItem] = useState<string>();
   const [isEditingAvailable, setIsEditingAvailable] = useState(true);
@@ -66,7 +68,9 @@ export const Board = () => {
     dispatch(replaceItemInBoard({ idOfHomeItem, idOfTargetItem, task }));
   };
   const handleCreateNewTask = (idOfBoardItem: string) => {
-    isEditingAvailable && dispatch(createNewTask({ idOfBoardItem }));
+    if (isEditingAvailable) {
+      dispatch(startCreatingProcess({ idOfBoardItem }));
+    }
   };
   const handleSetIsEditInProcessTask = (
     idOfBoardItem: string,

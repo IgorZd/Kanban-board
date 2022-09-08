@@ -8,10 +8,12 @@ import { Description } from "./components/description/Description";
 import { useDispatch } from "react-redux";
 import {
   deleteTask,
-  setTaskAuthorValue,
-  setTaskDescriptionValue,
+  handleCreateTask,
+  setTask,
 } from "../../app/state/boardSlice";
 import { Author } from "./components/author/Author";
+import { createTask, removeTask, updateTask } from "../../api/kanbanBoard";
+import { NEW_ID } from "../../consts";
 
 const Wrapper = styled.li`
   width: 100%;
@@ -97,28 +99,45 @@ export const TaskItem = ({
     });
     setIsEditInProcess(true);
   };
-  const saveOnClick = () => {
+  const createLocalTask = (data: {
+    id: string;
+    author: string;
+    description: string;
+  }) => {
+    dispatch(handleCreateTask({ boardItemId, data }));
+  };
+  const saveOnClick = (taskId: string) => {
     if (localValues.description.length > 2 && localValues.author.length > 2) {
+      if (taskId !== NEW_ID) {
+        updateTask(boardItemId, taskId, {
+          author: localValues.author,
+          description: localValues.description,
+        });
+        dispatch(
+          setTask({
+            idOfBoardItem: boardItemId,
+            taskId: id,
+            author: localValues.author,
+            description: localValues.description,
+          })
+        );
+      } else {
+        createTask(
+          boardItemId,
+          {
+            author: localValues.author,
+            description: localValues.description,
+          },
+          createLocalTask
+        );
+      }
       setIsEditInProcess(false);
-      dispatch(
-        setTaskDescriptionValue({
-          idOfBoardItem: boardItemId,
-          taskId: id,
-          value: localValues.description,
-        })
-      );
-      dispatch(
-        setTaskAuthorValue({
-          idOfBoardItem: boardItemId,
-          taskId: id,
-          value: localValues.author,
-        })
-      );
     }
   };
   const deleteOnClick = () => {
     setIsEditInProcess(false);
     dispatch(deleteTask({ idOfBoardItem: boardItemId, id }));
+    removeTask(boardItemId, id);
   };
   const cancellOnClick = () => {
     if (
@@ -180,7 +199,9 @@ export const TaskItem = ({
             <Menu
               isEditingInProcess={isEditingInProcess}
               editOnClick={editOnClick}
-              saveOnClick={saveOnClick}
+              saveOnClick={() => {
+                saveOnClick(id);
+              }}
               cancellOnClick={cancellOnClick}
               deleteOnClick={deleteOnClick}
               isEditingAvailable={isEditingAvailable}
@@ -193,7 +214,7 @@ export const TaskItem = ({
               isEdinInProcess={isEditingInProcess}
               authorBackgroundColor={randomRGBA}
             />
-            <Text>{`id: ${id}`}</Text>
+            <Text>{`id: ${id !== NEW_ID ? id : "N/A"}`}</Text>
           </AuthorWrapper>
         </InfoContainer>
       </Wrapper>
