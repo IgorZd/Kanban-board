@@ -145,7 +145,9 @@ export const TaskItem = ({
   const deleteOnClick = () => {
     setIsEditInProcess(false);
     dispatch(deleteTask({ idOfBoardItem: boardItemId, id }));
-    removeTask(boardItemId, id, addNotification);
+    if (id !== NEW_ID) {
+      removeTask(boardItemId, id, addNotification);
+    }
   };
   const cancellOnClick = () => {
     if (
