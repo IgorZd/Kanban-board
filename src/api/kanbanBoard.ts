@@ -24,57 +24,90 @@ export const createTask = (
     id: string;
     author: string;
     description: string;
-  }) => void
+  }) => void,
+  addNotification: any
 ) => {
   axios
     .post(`${API_URL}/kanbanBoard/${columnId}/task`, data)
     .then((res) => {
       const { data } = res;
       createLocalTask(data);
+      addNotification({
+        message: "The task is successfully created!",
+        type: "success",
+      });
     })
     .catch((e) => {
-      console.log("e: ", e);
+      addNotification({
+        message: "Something went wrong...",
+        type: "error",
+      });
     });
 };
 
-export const removeTask = (columnId: string, taskId: string) => {
+export const removeTask = (
+  columnId: string,
+  taskId: string,
+  addNotification: any
+) => {
   axios
     .delete(`${API_URL}/kanbanBoard/${columnId}/${taskId}`)
     .then((res) => {
-      const { data } = res;
-      console.log("data: ", data);
+      addNotification({
+        message: "The task is successfully removed!",
+        type: "success",
+      });
     })
-    .catch((e) => console.log("e: ", e));
+    .catch((e) =>
+      addNotification({
+        message: "Something went wrong...",
+        type: "error",
+      })
+    );
 };
 
 export const updateTask = (
   columnId: string,
   taskId: string,
-  data: { author: string; description: string }
+  data: { author: string; description: string },
+  addNotification: any
 ) => {
   axios
     .put(`${API_URL}/kanbanBoard/${columnId}/${taskId}`, data)
     .then((res) => {
-      const { data } = res;
-      console.log("data: ", data);
+      addNotification({
+        message: "The task is successfully updated!",
+        type: "success",
+      });
     })
-    .catch((e) => console.log("e: ", e));
+    .catch((e) =>
+      addNotification({
+        message: "Something went wrong...",
+        type: "error",
+      })
+    );
 };
 
 export const replaceTask = (
   homeColumnId: string,
   targetColumnId: string,
-  taskId: string
+  taskId: string,
+  addNotification: any
 ) => {
   axios
     .post(
       `${API_URL}/kanbanBoard/from/${homeColumnId}/to/${targetColumnId}/replace/${taskId}`
     )
     .then((res) => {
-      const { data } = res;
-      console.log("data: ", data);
+      addNotification({
+        message: "The task is successfully replaced!",
+        type: "success",
+      });
     })
     .catch((e) => {
-      console.log("e: ", e);
+      addNotification({
+        message: "Something went wrong...",
+        type: "error",
+      });
     });
 };

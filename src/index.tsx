@@ -9,12 +9,15 @@ import "./styles/global.css";
 import { ThemeProvider } from "styled-components";
 import { theme } from "./styles/theme";
 import App from "./app/App";
+import { NotifierProvider } from "./features/notifier";
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <ThemeProvider theme={theme}>
-        <App />
+        <NotifierProvider>
+          <App />
+        </NotifierProvider>
       </ThemeProvider>
     </Provider>
   </React.StrictMode>,

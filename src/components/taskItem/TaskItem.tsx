@@ -14,6 +14,7 @@ import {
 import { Author } from "./components/author/Author";
 import { createTask, removeTask, updateTask } from "../../api/kanbanBoard";
 import { NEW_ID } from "../../consts";
+import { useNotifierFunctions } from "../../features/notifier";
 
 const Wrapper = styled.li`
   width: 100%;
@@ -85,6 +86,7 @@ export const TaskItem = ({
   const [isDraggableInProcess, setIsDraggableInProcess] = useState(false);
   const [localValues, setLocalValues] = useState({ description, author });
   const [savedValues, setSavedValues] = useState({ description, author });
+  const { addNotification } = useNotifierFunctions();
 
   const handleDescriptionOnChange = (value: string) => {
     setLocalValues({ ...localValues, description: value });
@@ -109,10 +111,15 @@ export const TaskItem = ({
   const saveOnClick = (taskId: string) => {
     if (localValues.description.length > 2 && localValues.author.length > 2) {
       if (taskId !== NEW_ID) {
-        updateTask(boardItemId, taskId, {
-          author: localValues.author,
-          description: localValues.description,
-        });
+        updateTask(
+          boardItemId,
+          taskId,
+          {
+            author: localValues.author,
+            description: localValues.description,
+          },
+          addNotification
+        );
         dispatch(
           setTask({
             idOfBoardItem: boardItemId,
@@ -128,7 +135,8 @@ export const TaskItem = ({
             author: localValues.author,
             description: localValues.description,
           },
-          createLocalTask
+          createLocalTask,
+          addNotification
         );
       }
       setIsEditInProcess(false);
@@ -137,7 +145,7 @@ export const TaskItem = ({
   const deleteOnClick = () => {
     setIsEditInProcess(false);
     dispatch(deleteTask({ idOfBoardItem: boardItemId, id }));
-    removeTask(boardItemId, id);
+    removeTask(boardItemId, id, addNotification);
   };
   const cancellOnClick = () => {
     if (

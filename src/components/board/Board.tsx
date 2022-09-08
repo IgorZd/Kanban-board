@@ -12,6 +12,7 @@ import {
 import { BoardItemState, TaskState } from "../../app/state/boardInterfaces";
 import { DropTarget } from "../../features/dragAndDrop/DropTarget";
 import { replaceTask, useGetKanbanBoard } from "../../api/kanbanBoard";
+import { useNotifierFunctions } from "../../features/notifier";
 
 const Wrapper = styled.div`
   width: 100%;
@@ -63,11 +64,12 @@ export const Board = () => {
     notEditingNumberOfTasksFromTodo +
     notEditingNumberOfTasksInProgress +
     notEditingNumberOfTasksFromDone;
+  const { addNotification } = useNotifierFunctions();
 
   const handleDropItem = (task: TaskState, idOfTargetItem: string) => {
     dispatch(replaceItemInBoard({ idOfHomeItem, idOfTargetItem, task }));
     if (idOfHomeItem && idOfTargetItem && task.id) {
-      replaceTask(idOfHomeItem, idOfTargetItem, task.id);
+      replaceTask(idOfHomeItem, idOfTargetItem, task.id, addNotification);
     }
   };
   const handleCreateNewTask = (idOfBoardItem: string) => {
